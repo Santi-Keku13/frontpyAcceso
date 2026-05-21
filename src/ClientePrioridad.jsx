@@ -115,11 +115,10 @@ const ClientePrioridad = ({ apiUrl }) => {
             }}>
               {ultimoTurno ? (
                 <div style={styles.contentWrapper}>
-                  <div style={styles.mensaje}>PASE A</div>
+                  <div style={styles.mensaje}>PASE A CAJA</div>
                   <div style={styles.cajaNumero}>
                     {ultimoTurno.caja}
                   </div>
-                  <div style={styles.cajaLabel}>CAJA</div>
                 </div>
               ) : (
                 <div style={styles.esperando}>
