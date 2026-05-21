@@ -125,6 +125,7 @@ const Cliente = ({ apiUrl }) => {
                   <div style={styles.cajaNumero}>
                     {ultimoTurno.caja}
                   </div>
+                  <div style={styles.cajaLabel}>MUCHAS GRACIAS</div>
                 </div>
               ) : (
                 <div style={styles.esperando}>
