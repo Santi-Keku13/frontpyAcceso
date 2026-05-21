@@ -10,7 +10,7 @@ function App() {
   
   // URL BASE
   const BASE_URL = import.meta.env.PROD 
-    ? 'https://imagination-malpractice-bloomberg-uses.trycloudflare.com'
+    ? 'https://optimal-lip-initiatives-seeing.trycloudflare.com'
     : 'http://localhost:5050';
   
   const API_URL = `${BASE_URL}/api`;
