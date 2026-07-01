@@ -10,7 +10,7 @@ function App() {
   
   // URL BASE
   const BASE_URL = import.meta.env.PROD 
-    ? 'https://acute-bailey-wrapped-sec.trycloudflare.com'
+    ? 'https://midnight-settlement-land-samples.trycloudflare.com'
     : 'http://localhost:5050';
   
   const API_URL = `${BASE_URL}/api`;
