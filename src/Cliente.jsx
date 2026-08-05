@@ -5,8 +5,10 @@ const Cliente = ({ apiUrl }) => {
   const timerRef = useRef(null);
   const pollingRef = useRef(null);
 
-  // --- NUEVA CONFIGURACIÓN PARA EL CARRUSEL ---
-  // 1. Agrega aquí las rutas de todas tus imágenes de propaganda
+  // 🔴 REFERENCIA CRÍTICA: Mantiene el último ID sin provocar re-renders ni romper el setInterval
+  const ultimoTurnoIdRef = useRef(null);
+
+  // --- CONFIGURACIÓN DEL CARRUSEL ---
   const imagenesPropaganda = [
     "/assets/propaganda2.png",
     "/assets/propaganda.png",
@@ -18,22 +20,22 @@ const Cliente = ({ apiUrl }) => {
   
   const [imagenActualIdx, setImagenActualIdx] = useState(0);
 
-  // 2. Efecto para cambiar automáticamente de imagen cada 10 segundos
+  // Efecto para cambiar automáticamente de imagen cada 10 segundos
   useEffect(() => {
     const carruselInterval = setInterval(() => {
       setImagenActualIdx((prevIdx) => (prevIdx + 1) % imagenesPropaganda.length);
-    },10000); // 10000ms = 10 segundos
+    }, 10000);
 
     return () => clearInterval(carruselInterval);
   }, [imagenesPropaganda.length]);
-  // --------------------------------------------
 
-  // Temporizador de 10 minutos para borrar el turno
+  // Temporizador de 10 minutos para limpiar el display
   useEffect(() => {
     if (ultimoTurno) {
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => {
         setUltimoTurno(null);
+        ultimoTurnoIdRef.current = null;
       }, 10 * 60 * 1000);
     }
     return () => {
@@ -41,23 +43,43 @@ const Cliente = ({ apiUrl }) => {
     };
   }, [ultimoTurno]);
 
-  // Polling: consultar cada 3 segundos si hay nuevo turno
+  const reproducirSonido = () => {
+    const audio = new Audio('/assets/llamador.mp3');
+    audio.play().catch((err) => {
+      console.warn("Reproducción automática bloqueada por el navegador:", err);
+    });
+  };
+
+  // 🔄 POLLING CORREGIDO
   useEffect(() => {
     const fetchUltimoTurno = async () => {
       try {
         const response = await fetch(`${apiUrl}/ultimo-turno`);
         const data = await response.json();
         
-        if (data.ultimoTurno) {
-          const turnoActual = {
-            id: data.ultimoTurno.id, // 👈 Guardamos el ID único (timestamp)
-            caja: data.ultimoTurno.caja,
-            hora: data.ultimoTurno.hora
-          };
-          
-          // 💡 ATENCIÓN: Solo suena si el ID del nuevo llamado es DISTINTO al que ya teníamos
-          if (!ultimoTurno || ultimoTurno.id !== turnoActual.id) {
-            setUltimoTurno(turnoActual);
+        if (data && data.ultimoTurno) {
+          const turnoRecibido = data.ultimoTurno;
+          const nuevoId = turnoRecibido.id || `${turnoRecibido.caja}-${turnoRecibido.turno}`;
+
+          // CASO 1: Carga inicial de la pantalla -> Guardar estado SIN reproducir audio
+          if (ultimoTurnoIdRef.current === null) {
+            ultimoTurnoIdRef.current = nuevoId;
+            setUltimoTurno({
+              id: nuevoId,
+              caja: turnoRecibido.caja,
+              hora: turnoRecibido.hora
+            });
+          } 
+          // CASO 2: Llegó un llamado NUEVO -> Actualizar pantalla Y REPRODUCIR SONIDO
+          else if (ultimoTurnoIdRef.current !== nuevoId) {
+            ultimoTurnoIdRef.current = nuevoId;
+            setUltimoTurno({
+              id: nuevoId,
+              caja: turnoRecibido.caja,
+              hora: turnoRecibido.hora
+            });
+            
+            // 🔔 SUENA ÚNICAMENTE CUANDO SE GENERA UN NUEVO TURNO
             reproducirSonido();
           }
         }
@@ -66,20 +88,17 @@ const Cliente = ({ apiUrl }) => {
       }
     };
 
+    // Consulta inicial inmediata
     fetchUltimoTurno();
+    
+    // Polling regular cada 3 segundos
     pollingRef.current = setInterval(fetchUltimoTurno, 3000);
     
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
-  }, [apiUrl, ultimoTurno]);
+  }, [apiUrl]); // 🔴 'ultimoTurno' eliminado de las dependencias para evitar desincronizaciones
 
-  const reproducirSonido = () => {
-    const audio = new Audio('/assets/llamador.mp3');
-    audio.play().catch(() => {});
-  };
-
-  // Guardamos la imagen que toca mostrar según el índice actual
   const imagenMostrar = imagenesPropaganda[imagenActualIdx];
 
   return (
@@ -91,21 +110,21 @@ const Cliente = ({ apiUrl }) => {
         </header>
 
         <main style={styles.mainContent}>
-          {/* SECCIÓN DEL VIDEO/CARRUSEL MODIFICADA */}
+          {/* SECCIÓN DEL CARRUSEL DE IMÁGENES */}
           <div style={{
             ...styles.videoSection,
             backgroundImage: `url(${imagenMostrar})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            transition: 'background-image 0.5s ease-in-out' // Suaviza el cambio de fondo blur
+            transition: 'background-image 0.5s ease-in-out'
           }}>
             <div style={styles.blurOverlay}>
               <img 
-                key={imagenActualIdx} // 'key' vital aquí para que React note el cambio y aplique animaciones si quisieras
+                key={imagenActualIdx} 
                 src={imagenMostrar} 
                 style={{
                   ...styles.videoPlayer,
-                  transition: 'opacity 0.5s ease-in-out' // Transición suave para la imagen principal
+                  transition: 'opacity 0.5s ease-in-out'
                 }}
                 alt={`Propaganda ${imagenActualIdx + 1}`}
               />
@@ -139,7 +158,6 @@ const Cliente = ({ apiUrl }) => {
   );
 };
 
-// Tus estilos se mantienen exactamente IGUALES
 const styles = {
   viewPort: { 
     height: 'calc(100vh - 160px)', 
