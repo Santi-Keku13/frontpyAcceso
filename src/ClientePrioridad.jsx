@@ -8,7 +8,7 @@ const ClientePrioridad = ({ apiUrl }) => {
   // --- CONFIGURACIÓN PARA EL CARRUSEL ---
   const imagenesPropaganda = [
     "/assets/propaganda2.png",
-    "/assets/propaganda.jpeg", 
+    "/assets/propaganda7.jpeg", 
   ];
   
   const [imagenActualIdx, setImagenActualIdx] = useState(0);
