@@ -10,7 +10,7 @@ function App() {
   
   // URL BASE
   const BASE_URL = import.meta.env.PROD 
-    ? 'https://preserve-edwards-generates-also.trycloudflare.com'
+    ? 'https://dated-grants-roman-jenny.trycloudflare.com'
     : 'http://localhost:5050';
   
   const API_URL = `${BASE_URL}/api`;
