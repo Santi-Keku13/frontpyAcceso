@@ -103,8 +103,8 @@ const Cliente = ({ apiUrl }) => {
     <div style={styles.viewPort}>
       <div style={styles.container}>
         <header style={styles.header}>
-          <h1 style={styles.tituloPrincipal}>BLOW MAX</h1>
-          <p style={styles.eslogan}>El mayorista del centro</p>
+          <h1 style={styles.tituloPrincipal}>blowMax</h1>
+          <p style={styles.eslogan}>TU MAYORISTA</p>
         </header>
 
         <main style={styles.mainContent}>
@@ -186,7 +186,7 @@ const styles = {
     margin: 0,
     lineHeight: 1
   },
-  eslogan: { fontSize: '2.5vh', color: '#cc0000', margin: 0 },
+  eslogan: { fontSize: '2.5vh', color: '#8b00cc', margin: 0 },
   mainContent: { 
     display: 'flex', 
     height: '88%', 

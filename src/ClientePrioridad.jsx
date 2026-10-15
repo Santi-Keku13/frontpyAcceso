@@ -84,8 +84,8 @@ const ClientePrioridad = ({ apiUrl }) => {
       <div style={styles.container}>
         <header style={styles.header}>
           {/* Un sutil indicador visual en el título que diferencia la pantalla física de prioridad */}
-          <h1 style={styles.tituloPrincipal}>BLOW MAX <span style={styles.tagPrioridad}>⭐ PRIORIDAD</span></h1>
-          <p style={styles.eslogan}>El mayorista del centro</p>
+          <h1 style={styles.tituloPrincipal}>blowMax<span style={styles.tagPrioridad}>⭐ PRIORIDAD</span></h1>
+          <p style={styles.eslogan}>TU MAYORISTA</p>
         </header>
 
         <main style={styles.mainContent}>
@@ -144,7 +144,7 @@ const styles = {
   header: { textAlign: 'center', height: '12%', display: 'flex', flexDirection: 'column', justifyContent: 'center' },
   tituloPrincipal: { fontSize: '7vh', color: '#FF0000', fontWeight: '900', margin: 0, lineHeight: 1, position: 'relative' },
   tagPrioridad: { fontSize: '2.5vh', backgroundColor: '#FF0000', color: '#fff', padding: '2px 10px', borderRadius: '5px', verticalAlign: 'middle', marginLeft: '10px' },
-  eslogan: { fontSize: '2.5vh', color: '#cc0000', margin: 0 },
+  eslogan: { fontSize: '2.5vh', color: '#7000cc', margin: 0 },
   mainContent: { display: 'flex', height: '88%', gap: '20px', paddingBottom: '10px' },
   videoSection: { flex: 1.8, backgroundColor: '#000', borderRadius: '25px', overflow: 'hidden', height: '100%', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' },
   blurOverlay: { width: '100%', height: '100%', backdropFilter: 'blur(20px)', backgroundColor: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
