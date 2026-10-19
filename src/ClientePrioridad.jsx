@@ -7,6 +7,9 @@ const ClientePrioridad = ({ apiUrl }) => {
 
   // --- CONFIGURACIÓN PARA EL CARRUSEL ---
   const imagenesPropaganda = [
+    "/assets/propaganda1.jpeg",
+    "/assets/propaganda3.jpeg",
+    "/assets/propaganda4.jpeg",
     "/assets/propaganda2.png",
     "/assets/propaganda5.jpeg",
     "/assets/propaganda6.jpeg",
