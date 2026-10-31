@@ -10,7 +10,7 @@ function App() {
   
   // URL BASE
   const BASE_URL = import.meta.env.PROD 
-    ? 'https://gossip-arrange-troops-ensemble.trycloudflare.com'
+    ? 'https://throat-constitutional-interviews-tide.trycloudflare.com '
     : 'http://localhost:5050';
   
   const API_URL = `${BASE_URL}/api`;
