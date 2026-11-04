@@ -4,6 +4,9 @@ const ClientePrioridad = ({ apiUrl }) => {
   const [ultimoTurno, setUltimoTurno] = useState(null);
   const timerRef = useRef(null);
   const pollingRef = useRef(null);
+  
+  // 💡 GUARDAMOS EL ID DEL ÚLTIMO TURNO PROCESADO SIN RE-CREAR EFECTOS
+  const ultimoTurnoIdRef = useRef(null);
 
   // --- CONFIGURACIÓN PARA EL CARRUSEL ---
   const imagenesPropaganda = [
@@ -32,6 +35,7 @@ const ClientePrioridad = ({ apiUrl }) => {
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => {
         setUltimoTurno(null);
+        ultimoTurnoIdRef.current = null; // Limpiamos también la referencia
       }, 10 * 60 * 1000);
     }
     return () => {
@@ -39,8 +43,9 @@ const ClientePrioridad = ({ apiUrl }) => {
     };
   }, [ultimoTurno]);
 
-  /* Poling: Consultamos al nuevo endpoint de prioridad.
-    Este endpoint devolverá la última caja prioritaria que emitió un llamado.
+  /* Polling corregido:
+     - Se ejecuta de manera continua cada 3 segundos sin reiniciarse por cambios de estado.
+     - Compara directamente contra ultimoTurnoIdRef.current para saber si el turno es realmente NUEVO.
   */
   useEffect(() => {
     const fetchUltimoTurnoPrioridad = async () => {
@@ -48,16 +53,19 @@ const ClientePrioridad = ({ apiUrl }) => {
         const response = await fetch(`${apiUrl}/ultimo-turno-prioridad`);
         const data = await response.json();
         
-        if (data.ultimoTurno) {
-          const turnoActual = {
-            id: data.ultimoTurno.id, // 👈 Guardamos el ID único (timestamp)
-            caja: data.ultimoTurno.caja,
-            hora: data.ultimoTurno.hora
-          };
+        if (data && data.ultimoTurno) {
+          const nuevoId = data.ultimoTurno.id;
           
-          // 💡 ATENCIÓN: Solo suena si el ID del nuevo llamado es DISTINTO al que ya teníamos
-          if (!ultimoTurno || ultimoTurno.id !== turnoActual.id) {
-            setUltimoTurno(turnoActual);
+          // 💡 EVALUACIÓN ESTRICTA: Solo suena si el ID recibido es estrictamente DISTINTO al guardado en Ref
+          if (ultimoTurnoIdRef.current !== nuevoId) {
+            ultimoTurnoIdRef.current = nuevoId; // Actualizamos la referencia inmediatamente
+            
+            setUltimoTurno({
+              id: nuevoId,
+              caja: data.ultimoTurno.caja,
+              hora: data.ultimoTurno.hora
+            });
+            
             reproducirSonido();
           }
         }
@@ -72,11 +80,13 @@ const ClientePrioridad = ({ apiUrl }) => {
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
-  }, [apiUrl, ultimoTurno]);
+  }, [apiUrl]); // 👈 SolamenteapiUrl como dependencia. Ya no se destruye el interval al sonar.
 
   const reproducirSonido = () => {
     const audio = new Audio('/assets/llamador.mp3');
-    audio.play().catch(() => {});
+    audio.play().catch((err) => {
+      console.warn("Autoplay bloqueado por el navegador:", err);
+    });
   };
 
   const imagenMostrar = imagenesPropaganda[imagenActualIdx];
@@ -85,7 +95,6 @@ const ClientePrioridad = ({ apiUrl }) => {
     <div style={styles.viewPort}>
       <div style={styles.container}>
         <header style={styles.header}>
-          {/* Un sutil indicador visual en el título que diferencia la pantalla física de prioridad */}
           <h1 style={styles.tituloPrincipal}>blowMax<span style={styles.tagPrioridad}>⭐ PRIORIDAD</span></h1>
           <p style={styles.eslogan}>TU MAYORISTA</p>
         </header>
@@ -139,7 +148,6 @@ const ClientePrioridad = ({ apiUrl }) => {
   );
 };
 
-// Se mantienen tus estilos base intactos y sumamos el detalle estético para el título
 const styles = {
   viewPort: { height: 'calc(100vh - 160px)', width: '100%', overflow: 'hidden', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' },
   container: { height: '100%', display: 'flex', flexDirection: 'column', padding: '10px 20px', boxSizing: 'border-box' },
