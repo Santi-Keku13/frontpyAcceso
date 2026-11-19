@@ -10,7 +10,7 @@ function App() {
   
   // URL BASE
   const BASE_URL = import.meta.env.PROD 
-    ? 'https://acquire-buildings-katie-superior.trycloudflare.com'
+    ? 'https://version-fragrances-implemented-voltage.trycloudflare.com'
     : 'http://localhost:5050';
   
   const API_URL = `${BASE_URL}/api`;
