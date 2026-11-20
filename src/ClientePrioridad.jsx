@@ -12,7 +12,10 @@ const ClientePrioridad = ({ apiUrl }) => {
   const imagenesPropaganda = [
     "/assets/MODO.jpeg",
     "/assets/propaganda6.jpeg",
-    "/assets/propaganda7.jpeg", 
+    "/assets/propaganda7.jpeg",
+    "/assets/propaganda2.jpeg",
+    "/assets/puntosblow.jpeg",
+    "/assets/puntosblow2.jpeg",
   ];
   
   const [imagenActualIdx, setImagenActualIdx] = useState(0);
